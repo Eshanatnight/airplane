@@ -1,0 +1,26 @@
+[package]
+name = "flight_client_rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+arrow-schema = { version = "51.0.0", features = ["serde"] }
+arrow-array = { version = "51.0.0" }
+arrow-json = "51.0.0"
+arrow-ipc = "51.0.0"
+arrow-select = "51.0.0"
+datafusion = "37.1.0"
+parquet = "51.0.0"
+
+### LiveTail server deps
+arrow-flight = "51.0.0"
+tonic = {version = "0.11.0", features = ["tls"] }
+tonic-web = "0.11.0"
+tower-http = { version = "0.5.2", features = ["cors"] }
+tokio = { version = "1.37.0", features = ["full"] }
+serde = "1.0.198"
+serde_json = "1.0.116"
+bytes = { version = "1.6.0", features = ["serde"] }
+futures = { version = "0.3.30", features = ["futures-executor"] }
