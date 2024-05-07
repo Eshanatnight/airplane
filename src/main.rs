@@ -1,19 +1,16 @@
-#![allow(unused_imports)]
-use std::{collections::HashMap, error::Error, sync::Arc};
+use std::error::Error;
 
 use arrow_array::RecordBatch;
-use arrow_flight::{
-    flight_service_client::FlightServiceClient, utils::flight_data_to_arrow_batch, FlightClient,
-    Ticket,
-};
-use arrow_schema::Schema;
+use arrow_flight::{FlightClient, Ticket};
 use futures::TryStreamExt;
 use serde_json::Map;
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::env::args;
 use tonic::transport::Channel;
+
 pub fn record_batches_to_json(records: &[&RecordBatch]) -> Vec<Map<String, Value>> {
     let buf = vec![];
+
     let mut writer = arrow_json::ArrayWriter::new(buf);
     writer.write_batches(records).unwrap();
     writer.finish().unwrap();
@@ -31,18 +28,29 @@ pub fn record_batches_to_json(records: &[&RecordBatch]) -> Vec<Map<String, Value
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let mut args = args().collect::<Vec<_>>();
-    args.pop().unwrap();
+    args.remove(0);
 
+    let end_time = args.pop().unwrap_or_else(|| "now".to_owned());
+    let start_time = args.pop().unwrap_or_else(|| "10days".to_owned());
     let query = args
         .pop()
-        .unwrap_or_else(|| "select * from teststream limit 50".to_owned());
-    let start_time = args.pop().unwrap_or_else(|| "10days".to_owned());
-    let end_time = args.pop().unwrap_or_else(|| "now".to_owned());
+        .unwrap_or_else(|| "select * from teststream".to_owned());
+    println!("{}:{}:{}", query, start_time, end_time);
     let channel = Channel::from_static("http://localhost:8002")
         .connect()
         .await?;
-    let mut client = FlightClient::new(channel);
+
+    let client = FlightClient::new(channel);
+    let inn = client
+        .into_inner()
+        .accept_compressed(tonic::codec::CompressionEncoding::Gzip)
+        .max_decoding_message_size(usize::MAX)
+        .max_encoding_message_size(4 * 1024 * 1024);
+
+    let mut client = FlightClient::new_from_inner(inn);
+
     client.add_header("authorization", "Basic YWRtaW46YWRtaW4=")?;
+
     let td = format!(
         "{}\"query\":\"{}\", \"startTime\": \"{}\", \"endTime\": \"{}\"{}",
         '{', query, start_time, end_time, '}'
@@ -50,15 +58,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let ticket_data = serde_json::from_str::<Value>(&td)?;
     let mut ticket: Vec<u8> = vec![];
     serde_json::to_writer(&mut ticket, &ticket_data)?;
-    // let resp = client
-    //     .get_schema(arrow_flight::FlightDescriptor {
-    //         r#type: 1,
-    //         cmd: vec![].into(),
-    //         path: ["teststream".to_owned()].to_vec(),
-    //     })
-    //     .await?;
-    //
-    // dbg!(resp);
 
     let response = client
         .do_get(Ticket {
