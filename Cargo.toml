@@ -9,13 +9,11 @@ edition = "2021"
 arrow-schema = { version = "51.0.0", features = ["serde"] }
 arrow-array = { version = "51.0.0" }
 arrow-json = "51.0.0"
-arrow-ipc = "51.0.0"
+arrow-ipc = { version = "51.0.0", features = ["zstd"] }
 arrow-select = "51.0.0"
 datafusion = "37.1.0"
 parquet = "51.0.0"
-
-### LiveTail server deps
-arrow-flight = "51.0.0"
+arrow-flight = { version = "51.0.0", features = ["arrow-string", "anyhow", "arrow-select", "arrow-row", "arrow-data", "tls", "arrow-ord", "arrow-arith"] }
 tonic = {version = "0.11.0", features = ["tls" , "transport", "gzip", "zstd"] }
 tonic-web = "0.11.0"
 tower-http = { version = "0.5.2", features = ["cors"] }
@@ -24,3 +22,4 @@ serde = "1.0.198"
 serde_json = "1.0.116"
 bytes = { version = "1.6.0", features = ["serde"] }
 futures = { version = "0.3.30", features = ["futures-executor"] }
+chrono = "0.4.38"
