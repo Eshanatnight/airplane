@@ -5,8 +5,6 @@ use arrow_flight::Ticket;
 use futures::TryStreamExt;
 use serde_json::Value;
 
-use tokio::{fs as AsyncFs, io::AsyncWriteExt};
-
 use crate::utils::{get_client, record_batches_to_json};
 
 pub async fn select_all() -> Result<(), Box<dyn Error>> {
@@ -37,6 +35,7 @@ pub async fn select_all() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_all_last_min() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select * from teststream\", \"startTime\": \"1min\", \"endTime\": \"now\"{}",
@@ -72,6 +71,7 @@ pub async fn select_all_last_min() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_count() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select count(*) from teststream\", \"startTime\": \"10days\", \"endTime\": \"now\"{}",
@@ -106,6 +106,7 @@ pub async fn select_count() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_count_last_min() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select count(*) from teststream\", \"startTime\": \"1min\", \"endTime\": \"now\"{}",
@@ -141,6 +142,7 @@ pub async fn select_count_last_min() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_count_alias() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select count(*) as count from teststream\", \"startTime\": \"10days\", \"endTime\": \"now\"{}",
@@ -175,6 +177,7 @@ pub async fn select_count_alias() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_count_alias_last_min() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select count(*) as count from teststream\", \"startTime\": \"1min\", \"endTime\": \"now\"{}",
@@ -210,6 +213,7 @@ pub async fn select_count_alias_last_min() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_based_on_os(os: &str) -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select * from teststream where os = '{}' limit 900\", \"startTime\": \"10days\", \"endTime\": \"now\"{}",
@@ -245,6 +249,7 @@ pub async fn select_based_on_os(os: &str) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[allow(unused)]
 pub async fn select_distinct() -> Result<(), Box<dyn Error>> {
     let td = format!(
         "{}\"query\":\"select distinct(device_id) from teststream limit 900\", \"startTime\": \"10days\", \"endTime\": \"now\"{}",
