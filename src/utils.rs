@@ -2,13 +2,14 @@ use std::error::Error;
 
 use arrow_array::RecordBatch;
 use arrow_flight::FlightClient;
+use arrow_json::ArrayWriter;
 use serde_json::{Map, Value};
 use tonic::transport::Channel;
 
 pub fn record_batches_to_json(records: &[&RecordBatch]) -> Vec<Map<String, Value>> {
     let buf = vec![];
 
-    let mut writer = arrow_json::ArrayWriter::new(buf);
+    let mut writer = ArrayWriter::new(buf);
     writer.write_batches(records).unwrap();
     writer.finish().unwrap();
 
