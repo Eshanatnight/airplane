@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/encoding/gzip"
+
 )
 
 func main() {
@@ -20,10 +22,14 @@ func main() {
 		nil,
 		nil,
 		grpc.WithTransportCredentials(creds),
+		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024 * 1024 * 1024)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1024 * 1024 * 1024)),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer client.Close()
 
 	// Two WLM settings can be provided upon initial authentication with the dremio
@@ -36,6 +42,7 @@ func main() {
 	if ctx, err = client.AuthenticateBasicToken(ctx, "admin", "admin"); err != nil {
 		log.Fatal(err)
 	}
+
 	log.Println("[INFO] Authentication was successful.")
 
 	json := `{
